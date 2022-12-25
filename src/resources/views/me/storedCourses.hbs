@@ -1,8 +1,26 @@
-<div class="mt-4">
-    <h3>Khóa học của tôi</h3>
+<form name="container-form" method="post" class="mt-4" action="/courses/handle-form-actions">
+    <div class="">
+        <h3>Khóa học của tôi</h3>
+        <a href="/me/trash/courses">Thùng rác ({{deleteCount}})</a>
+        <div class="mt-4 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                <label class="form-check-label" for="checkbox-all">
+                    Chọn tất cả
+                </label>
+            </div>
+            <select class="form-control form-control-sm zxc" name="action" style="width: 130px; margin: 0 16px;"
+                required>
+                <option value="">-- Lựa chọn --</option>
+                <option value="delete">Xóa</option>
+            </select>
+            <button class="btn btn-primary btn-sm check-all-submit-btn" disabled="disabled">Áp dụng</button>
+        </div>
+    </div>
     <table class="table mt-4">
-        <thead>
+        <thead class="hidden-course">
             <tr>
+                <td></td>
                 <th scope="col">#</th>
                 <th scope="col">Tên khóa học</th>
                 <th scope="col">Trình độ</th>
@@ -13,6 +31,11 @@
         <tbody>
             {{#each courses}}
             <tr>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._id}}">
+                    </div>
+                </td>
                 <th scope="row">{{sum @index 1}}</th>
                 <td>{{this.name}}</td>
                 <td>{{this.level}}</td>
@@ -23,10 +46,22 @@
                         class="btn btn-link">Xóa</a>
                 </td>
             </tr>
+            {{else}}
+            <tr>
+                <td colspan="5" class="text-center">
+                    Bạn chưa đăng khóa học nào.
+                    <a href="/courses/create">Đăng khóa học</a>
+                </td>
+                <style>
+                    .hidden-course {
+                        display: none;
+                    }
+                </style>
+            </tr>
             {{/each}}
         </tbody>
     </table>
-</div>
+</form>
 
 {{!-- Confirm delete course --}}
 
@@ -57,17 +92,45 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         let id
-        const btnDeleteCourse = document.getElementById('btn-delete-course')
         const deleteForm = document.forms['delete-course-form']
+        const containerForm = $('form[name="container-form"]')
+        const btnDeleteCourse = document.getElementById('btn-delete-course')
+        const checkboxAll = $('#checkbox-all')
+        const courseItemCheckbox = $('input[name="courseIds[]"]')
+        const checkAllSubmitBtn = $('.check-all-submit-btn')
+
         $('#delete-course-modal').on('show.bs.modal', function (event) {
             let button = $(event.relatedTarget)
             id = button.data('id')
-            console.log(id)
         })
 
         btnDeleteCourse.onclick = () => {
             deleteForm.action = '/courses/' + id + '?_method=delete'
             deleteForm.submit()
+        }
+
+        // Checkbox all changed
+        checkboxAll.change((e) => {
+            const isCheckAll = $(e.target).prop('checked')
+            courseItemCheckbox.prop('checked', isCheckAll)
+            renderCheckAllSubmitBtn()
+        })
+
+        // Courses item checkbox changed
+        courseItemCheckbox.change(() => {
+            const isCheckAll = courseItemCheckbox.length === $('input[name="courseIds[]"]:checked').length
+            checkboxAll.prop('checked', isCheckAll)
+            renderCheckAllSubmitBtn()
+        })
+
+        // Re-render check all submit button
+        const renderCheckAllSubmitBtn = () => {
+            const checkedCount = $('input[name="courseIds[]"]:checked').length
+            if (checkedCount) {
+                checkAllSubmitBtn.removeAttr('disabled')
+            } else {
+                checkAllSubmitBtn.addAttr('disabled')
+            }
         }
     })
 </script>
