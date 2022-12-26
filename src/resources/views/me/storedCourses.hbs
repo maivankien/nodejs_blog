@@ -3,7 +3,7 @@
         <h3>Khóa học của tôi</h3>
         <a href="/me/trash/courses">Thùng rác ({{deleteCount}})</a>
         <div class="mt-4 d-flex align-items-center">
-            <div class="form-check">
+            <div class="form-check" style="padding-left: 32px;">
                 <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
                 <label class="form-check-label" for="checkbox-all">
                     Chọn tất cả
@@ -20,11 +20,19 @@
     <table class="table mt-4">
         <thead class="hidden-course">
             <tr>
-                <td></td>
                 <th scope="col">#</th>
-                <th scope="col">Tên khóa học</th>
-                <th scope="col">Trình độ</th>
-                <th scope="col">Thời gian</th>
+                <th scope="col">ID
+                    {{{sortable '_id' _sort}}}
+                </th>
+                <th scope="col">Tên khóa học 
+                    {{{sortable 'name' _sort}}}
+                </th>
+                <th scope="col">Trình độ
+                    {{{sortable 'level' _sort}}}
+                </th>
+                <th scope="col">Thời gian
+                    {{{sortable 'createdAt' _sort}}}
+                </th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -36,7 +44,7 @@
                         <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._id}}">
                     </div>
                 </td>
-                <th scope="row">{{sum @index 1}}</th>
+                <th scope="row">{{this._id}}</th>
                 <td>{{this.name}}</td>
                 <td>{{this.level}}</td>
                 <td>{{this.createdAt}}</td>
